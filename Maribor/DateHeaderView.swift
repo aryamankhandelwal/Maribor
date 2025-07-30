@@ -34,7 +34,7 @@ struct DateHeaderView: View {
     private let forestGreen = Color(red: 0.1, green: 0.4, blue: 0.2)
     
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 20) {
             // Week day numbers
             HStack(spacing: 0) {
                 ForEach(weekDates, id: \.self) { date in

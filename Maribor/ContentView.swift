@@ -83,7 +83,7 @@ struct ContentView: View {
                                 ))
                             }
                         }
-                        .padding()
+                        .padding(.vertical)
                     }
                     .id("tasks-\(taskManager.selectedDate.timeIntervalSince1970)")
                     .transition(.asymmetric(
