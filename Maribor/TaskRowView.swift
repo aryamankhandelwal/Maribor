@@ -16,7 +16,13 @@ struct TaskRowView: View {
     
     var body: some View {
         HStack {
-            Button(action: onToggle) {
+            Button(action: {
+                // Haptic feedback for task completion
+                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                impactFeedback.impactOccurred()
+                
+                onToggle()
+            }) {
                 Image(systemName: task.isCompleted ? "checkmark.circle.fill" : "circle")
                     .foregroundColor(task.isCompleted ? forestGreen : .gray)
                     .font(.title2)
@@ -56,6 +62,10 @@ struct TaskRowView: View {
                     isSwiping = false
                     
                     if offset < deleteThreshold {
+                        // Haptic feedback for delete
+                        let notificationFeedback = UINotificationFeedbackGenerator()
+                        notificationFeedback.notificationOccurred(.error)
+                        
                         // Delete task
                         withAnimation(.easeInOut(duration: 0.3)) {
                             offset = -UIScreen.main.bounds.width
@@ -64,6 +74,10 @@ struct TaskRowView: View {
                             onDelete()
                         }
                     } else if offset > moveThreshold {
+                        // Haptic feedback for move to next day
+                        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+                        impactFeedback.impactOccurred()
+                        
                         // Move to next day
                         withAnimation(.easeInOut(duration: 0.3)) {
                             offset = UIScreen.main.bounds.width
@@ -80,6 +94,10 @@ struct TaskRowView: View {
                 }
         )
         .onTapGesture {
+            // Haptic feedback for edit
+            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+            impactFeedback.impactOccurred()
+            
             onEdit()
         }
         .overlay(

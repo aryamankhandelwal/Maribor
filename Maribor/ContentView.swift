@@ -28,6 +28,10 @@ struct ContentView: View {
                             .foregroundColor(.orange)
                         Spacer()
                         Button("Move to Today") {
+                            // Haptic feedback for manual rollover
+                            let notificationFeedback = UINotificationFeedbackGenerator()
+                            notificationFeedback.notificationOccurred(.success)
+                            
                             showingRolloverAlert = true
                         }
                         .font(.caption)
@@ -94,6 +98,10 @@ struct ContentView: View {
                     HStack {
                         Spacer()
                         Button(action: {
+                            // Haptic feedback for adding new task
+                            let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+                            impactFeedback.impactOccurred()
+                            
                             showingAddTask = true
                         }) {
                             Image(systemName: "plus")

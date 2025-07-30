@@ -79,6 +79,10 @@ struct DateHeaderView: View {
             // Date header with chevrons
             HStack {
                 Button(action: {
+                    // Haptic feedback for going backward
+                    let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                    impactFeedback.impactOccurred()
+                    
                     withAnimation(.easeInOut(duration: 0.25)) {
                         taskManager.goToPreviousDay()
                     }
@@ -96,6 +100,10 @@ struct DateHeaderView: View {
                         .fontWeight(.semibold)
                         .foregroundColor(Calendar.current.isDateInToday(taskManager.selectedDate) ? forestGreen : .white)
                         .onTapGesture {
+                            // Haptic feedback for going to today
+                            let notificationFeedback = UINotificationFeedbackGenerator()
+                            notificationFeedback.notificationOccurred(.success)
+                            
                             withAnimation(.easeInOut(duration: 0.25)) {
                                 taskManager.goToToday()
                             }
@@ -110,6 +118,10 @@ struct DateHeaderView: View {
                 Spacer()
                 
                 Button(action: {
+                    // Haptic feedback for going forward
+                    let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+                    impactFeedback.impactOccurred()
+                    
                     withAnimation(.easeInOut(duration: 0.25)) {
                         taskManager.goToNextDay()
                     }
