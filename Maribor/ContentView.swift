@@ -40,14 +40,20 @@ struct ContentView: View {
                 
                 if taskManager.currentDateTasks.isEmpty {
                     VStack(spacing: 20) {
-                        Spacer()
+                        Spacer(minLength: 0)
                         Text("No tasks")
                             .font(.title2)
                             .fontWeight(.medium)
                             .foregroundColor(.secondary)
-                        Spacer()
+                        Spacer(minLength: 0)
                     }
                     .padding()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .id("empty-\(taskManager.selectedDate.timeIntervalSince1970)")
+                    .transition(.asymmetric(
+                        insertion: .scale(scale: 1.05).combined(with: .opacity),
+                        removal: .scale(scale: 0.95).combined(with: .opacity)
+                    ))
                 } else {
                     ScrollView {
                         LazyVStack(spacing: 12) {
@@ -67,38 +73,52 @@ struct ContentView: View {
                                         taskManager.moveTaskToNextDay(task)
                                     }
                                 )
+                                .transition(.asymmetric(
+                                    insertion: .scale(scale: 1.02).combined(with: .opacity),
+                                    removal: .scale(scale: 0.98).combined(with: .opacity)
+                                ))
                             }
                         }
                         .padding()
                     }
+                    .id("tasks-\(taskManager.selectedDate.timeIntervalSince1970)")
+                    .transition(.asymmetric(
+                        insertion: .scale(scale: 1.05).combined(with: .opacity),
+                        removal: .scale(scale: 0.95).combined(with: .opacity)
+                    ))
                 }
-                Spacer()
+                
                 // Floating Action Button
-                HStack {
-                    Spacer()
-                    Button(action: {
-                        showingAddTask = true
-                    }) {
-                        Image(systemName: "plus")
-                            .font(.title2)
-                            .foregroundColor(.white)
-                            .frame(width: 56, height: 56)
-                            .background(Color(red: 0.1, green: 0.4, blue: 0.2))
-                            .clipShape(Circle())
-                            .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
+                VStack {
+                    Spacer(minLength: 0)
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            showingAddTask = true
+                        }) {
+                            Image(systemName: "plus")
+                                .font(.title2)
+                                .foregroundColor(.white)
+                                .frame(width: 56, height: 56)
+                                .background(Color(red: 0.1, green: 0.4, blue: 0.2))
+                                .clipShape(Circle())
+                                .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
+                        }
+                        .padding(.trailing, 20)
+                        .padding(.bottom, 20)
                     }
-                    .padding(.trailing, 20)
-                    .padding(.bottom, 20)
                 }
             }
             .navigationBarHidden(true)
             .sheet(isPresented: $showingAddTask) {
                 AddEditTaskView(taskManager: taskManager)
-                    .presentationDetents([.fraction(0.75)])
+                    .presentationDetents([.fraction(0.5)])
+                    .presentationDragIndicator(.visible)
             }
             .sheet(item: $taskToEdit) { task in
                 AddEditTaskView(taskManager: taskManager, taskToEdit: task)
-                    .presentationDetents([.fraction(0.75)])
+                    .presentationDetents([.fraction(0.5)])
+                    .presentationDragIndicator(.visible)
             }
             .alert("Move Outstanding Tasks", isPresented: $showingRolloverAlert) {
                 Button("Cancel", role: .cancel) { }
@@ -107,6 +127,12 @@ struct ContentView: View {
                 }
             } message: {
                 Text("Move \(taskManager.getOutstandingTasksCount()) outstanding task\(taskManager.getOutstandingTasksCount() == 1 ? "" : "s") from previous days to today?")
+            }
+        }
+        .onAppear {
+            // Ensure smooth initial rendering
+            DispatchQueue.main.async {
+                // Any additional setup after view appears
             }
         }
     }

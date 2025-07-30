@@ -79,7 +79,7 @@ struct DateHeaderView: View {
             // Date header with chevrons
             HStack {
                 Button(action: {
-                    withAnimation(.easeInOut(duration: 0.3)) {
+                    withAnimation(.easeInOut(duration: 0.25)) {
                         taskManager.goToPreviousDay()
                     }
                 }) {
@@ -94,18 +94,23 @@ struct DateHeaderView: View {
                     Text(dateFormatter.string(from: taskManager.selectedDate))
                         .font(.title2)
                         .fontWeight(.semibold)
-                        .foregroundColor(forestGreen)
+                        .foregroundColor(Calendar.current.isDateInToday(taskManager.selectedDate) ? forestGreen : .white)
                         .onTapGesture {
-                            withAnimation(.easeInOut(duration: 0.3)) {
+                            withAnimation(.easeInOut(duration: 0.25)) {
                                 taskManager.goToToday()
                             }
                         }
+                        .id("date-\(taskManager.selectedDate.timeIntervalSince1970)")
+                        .transition(.asymmetric(
+                            insertion: .scale(scale: 1.1).combined(with: .opacity),
+                            removal: .scale(scale: 0.9).combined(with: .opacity)
+                        ))
                 }
                 
                 Spacer()
                 
                 Button(action: {
-                    withAnimation(.easeInOut(duration: 0.3)) {
+                    withAnimation(.easeInOut(duration: 0.25)) {
                         taskManager.goToNextDay()
                     }
                 }) {
@@ -118,5 +123,9 @@ struct DateHeaderView: View {
         }
         .padding(.vertical, 8)
         .background(Color(.systemBackground))
+        .onAppear {
+            // Ensure safe initialization
+            guard !weekDates.isEmpty else { return }
+        }
     }
 } 

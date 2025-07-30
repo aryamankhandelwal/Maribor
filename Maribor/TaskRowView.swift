@@ -48,7 +48,9 @@ struct TaskRowView: View {
             DragGesture()
                 .onChanged { value in
                     isSwiping = true
-                    offset = value.translation.width
+                    // Ensure offset is within reasonable bounds
+                    let newOffset = value.translation.width
+                    offset = max(-UIScreen.main.bounds.width, min(UIScreen.main.bounds.width, newOffset))
                 }
                 .onEnded { _ in
                     isSwiping = false
@@ -103,5 +105,9 @@ struct TaskRowView: View {
                 }
             }
         )
+        .onAppear {
+            // Ensure safe initialization
+            offset = 0
+        }
     }
 } 

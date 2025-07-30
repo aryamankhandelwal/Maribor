@@ -11,8 +11,11 @@ import UserNotifications
 class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         
-        // Set up notification delegate
-        UNUserNotificationCenter.current().delegate = self
+        // Defer notification setup to avoid blocking launch
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            // Set up notification delegate
+            UNUserNotificationCenter.current().delegate = self
+        }
         
         return true
     }
@@ -35,6 +38,12 @@ struct MariborApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .onAppear {
+                    // Defer any heavy initialization
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        // Any additional setup can go here
+                    }
+                }
         }
     }
 }

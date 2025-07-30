@@ -8,8 +8,11 @@ class TaskManager: ObservableObject {
     
     init() {
         loadTasks()
-        setupTaskRollover()
-        requestNotificationPermission()
+        // Defer rollover setup to avoid blocking launch
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.setupTaskRollover()
+            self.requestNotificationPermission()
+        }
     }
     
     // MARK: - Task Rollover Setup
@@ -168,10 +171,29 @@ class TaskManager: ObservableObject {
         let now = Date()
         let today = calendar.startOfDay(for: now)
         
+        // Ensure safe date comparison
+        guard today != Date.distantPast else { return 0 }
+        
         return tasks.filter { task in
             let taskDate = calendar.startOfDay(for: task.date)
             return taskDate < today && !task.isCompleted
         }.count
+    }
+    
+    private func getNextWeekday(_ weekday: Int) -> Int {
+        let calendar = Calendar.current
+        let today = Date()
+        let todayWeekday = calendar.component(.weekday, from: today)
+        
+        // Ensure valid weekday values
+        let safeWeekday = max(1, min(7, weekday))
+        let safeTodayWeekday = max(1, min(7, todayWeekday))
+        
+        if safeTodayWeekday <= safeWeekday {
+            return safeWeekday - safeTodayWeekday
+        } else {
+            return 7 - safeTodayWeekday + safeWeekday
+        }
     }
     
     // MARK: - Task Management
