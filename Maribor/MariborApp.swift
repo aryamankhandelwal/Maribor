@@ -37,7 +37,7 @@ struct MariborApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainTabView()
                 .onAppear {
                     // Defer any heavy initialization
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
