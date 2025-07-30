@@ -1,4 +1,6 @@
 import SwiftUI
+import Speech
+import NaturalLanguage
 
 struct AddEditTaskView: View {
     @Environment(\.dismiss) private var dismiss
@@ -9,6 +11,12 @@ struct AddEditTaskView: View {
     @State private var taskName = ""
     @State private var taskDescription = ""
     @State private var taskDate = Date()
+    @State private var isListening = false
+    @State private var speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))
+    @State private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
+    @State private var recognitionTask: SFSpeechRecognitionTask?
+    @State private var audioEngine = AVAudioEngine()
+    @State private var nlpTimer: Timer?
     
     init(taskManager: TaskManager, taskToEdit: Task? = nil) {
         self.taskManager = taskManager
@@ -25,10 +33,30 @@ struct AddEditTaskView: View {
         NavigationView {
             Form {
                 Section(header: Text("Task Details")) {
-                    TextField("Task name", text: $taskName)
+                    HStack {
+                        TextField("Task name", text: $taskName)
+                            .onChange(of: taskName) { _ in
+                                scheduleNLPProcessing()
+                            }
+                        
+                        Button(action: {
+                            if isListening {
+                                stopListening()
+                            } else {
+                                startListening()
+                            }
+                        }) {
+                            Image(systemName: isListening ? "stop.circle.fill" : "mic.circle.fill")
+                                .foregroundColor(isListening ? .red : Color(red: 0.1, green: 0.4, blue: 0.2))
+                                .font(.title2)
+                        }
+                    }
                     
                     TextField("Description (optional)", text: $taskDescription, axis: .vertical)
                         .lineLimit(3...6)
+                        .onChange(of: taskDescription) { _ in
+                            scheduleNLPProcessing()
+                        }
                 }
                 
                 Section(header: Text("Date")) {
@@ -57,6 +85,168 @@ struct AddEditTaskView: View {
                     .disabled(taskName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
             }
+            .onAppear {
+                requestSpeechPermission()
+            }
+        }
+    }
+    
+    // MARK: - Speech Recognition
+    
+    private func requestSpeechPermission() {
+        SFSpeechRecognizer.requestAuthorization { status in
+            DispatchQueue.main.async {
+                switch status {
+                case .authorized:
+                    print("Speech recognition authorized")
+                case .denied, .restricted, .notDetermined:
+                    print("Speech recognition not authorized")
+                @unknown default:
+                    print("Unknown authorization status")
+                }
+            }
+        }
+    }
+    
+    private func startListening() {
+        guard let speechRecognizer = speechRecognizer, speechRecognizer.isAvailable else {
+            print("Speech recognizer not available")
+            return
+        }
+        
+        // Request audio permission
+        AVAudioSession.sharedInstance().requestRecordPermission { granted in
+            if granted {
+                DispatchQueue.main.async {
+                    self.beginListening()
+                }
+            } else {
+                print("Audio permission denied")
+            }
+        }
+    }
+    
+    private func beginListening() {
+        do {
+            let audioSession = AVAudioSession.sharedInstance()
+            try audioSession.setCategory(.record, mode: .measurement, options: .duckOthers)
+            try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
+            
+            recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
+            guard let recognitionRequest = recognitionRequest else { return }
+            
+            let inputNode = audioEngine.inputNode
+            recognitionRequest.shouldReportPartialResults = true
+            
+            recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest) { result, error in
+                if let result = result {
+                    let transcribedText = result.bestTranscription.formattedString
+                    DispatchQueue.main.async {
+                        self.taskName = transcribedText
+                        self.scheduleNLPProcessing()
+                    }
+                }
+                
+                if error != nil || result?.isFinal == true {
+                    self.audioEngine.stop()
+                    inputNode.removeTap(onBus: 0)
+                    self.recognitionRequest = nil
+                    self.recognitionTask = nil
+                    DispatchQueue.main.async {
+                        self.isListening = false
+                    }
+                }
+            }
+            
+            let recordingFormat = inputNode.outputFormat(forBus: 0)
+            inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
+                recognitionRequest.append(buffer)
+            }
+            
+            audioEngine.prepare()
+            try audioEngine.start()
+            isListening = true
+            
+        } catch {
+            print("Error starting speech recognition: \(error)")
+            isListening = false
+        }
+    }
+    
+    private func stopListening() {
+        audioEngine.stop()
+        recognitionRequest?.endAudio()
+        isListening = false
+    }
+    
+    // MARK: - NLP Processing
+    
+    private func scheduleNLPProcessing() {
+        // Cancel existing timer
+        nlpTimer?.invalidate()
+        
+        // Schedule new timer with 1 second delay
+        nlpTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
+            processNLP()
+        }
+    }
+    
+    private func processNLP() {
+        let combinedText = "\(taskName) \(taskDescription)".lowercased()
+        
+        // Create a date detector
+        let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.date.rawValue)
+        
+        if let detector = detector {
+            let range = NSRange(location: 0, length: combinedText.utf16.count)
+            let matches = detector.matches(in: combinedText, options: [], range: range)
+            
+            for match in matches {
+                if let date = match.date {
+                    DispatchQueue.main.async {
+                        self.taskDate = date
+                    }
+                    return
+                }
+            }
+        }
+        
+        // Custom date parsing for common phrases
+        let datePhrases = [
+            "today": 0,
+            "tomorrow": 1,
+            "day after tomorrow": 2,
+            "next week": 7,
+            "next monday": getNextWeekday(2), // Monday = 2
+            "next tuesday": getNextWeekday(3),
+            "next wednesday": getNextWeekday(4),
+            "next thursday": getNextWeekday(5),
+            "next friday": getNextWeekday(6),
+            "next saturday": getNextWeekday(7),
+            "next sunday": getNextWeekday(1)
+        ]
+        
+        for (phrase, days) in datePhrases {
+            if combinedText.contains(phrase) {
+                let calendar = Calendar.current
+                let newDate = calendar.date(byAdding: .day, value: days, to: Date()) ?? Date()
+                DispatchQueue.main.async {
+                    self.taskDate = newDate
+                }
+                return
+            }
+        }
+    }
+    
+    private func getNextWeekday(_ weekday: Int) -> Int {
+        let calendar = Calendar.current
+        let today = Date()
+        let todayWeekday = calendar.component(.weekday, from: today)
+        
+        if todayWeekday <= weekday {
+            return weekday - todayWeekday
+        } else {
+            return 7 - todayWeekday + weekday
         }
     }
     
