@@ -29,11 +29,12 @@ struct MainTabView: View {
                 .tag(1)
         }
         .accentColor(forestGreen)
+        .background(Color.clear)
         .onAppear {
             // Customize tab bar appearance
             let appearance = UITabBarAppearance()
             appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = UIColor.systemGray6
+            appearance.backgroundColor = UIColor.black.withAlphaComponent(0.4)
             
             // Add more padding to move icons lower
             appearance.stackedLayoutAppearance.normal.iconColor = UIColor.gray
@@ -49,16 +50,48 @@ struct MainTabView: View {
 
 struct ComingSoonView: View {
     var body: some View {
-        VStack {
-            Spacer()
-            Text("Coming soon")
-                .font(.title)
-                .fontWeight(.medium)
-                .foregroundColor(.white)
-            Spacer()
+        ZStack {
+            // Background image
+            if let image = UIImage(named: "forest_background") {
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+                    .clipped()
+                    .ignoresSafeArea()
+            }
+            
+            // Dark overlay to make UI elements more visible
+            Color.black
+                .opacity(0.6)
+                .ignoresSafeArea()
+            
+            // Main content
+            VStack(spacing: 0) {
+                // Top navigation bar
+                HStack {
+                    Spacer()
+                    Text("Maribor")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                    Spacer()
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 12)
+                .background(Color.black.opacity(0.4))
+                
+                VStack {
+                    Spacer()
+                    Text("Coming soon")
+                        .font(.title)
+                        .fontWeight(.medium)
+                        .foregroundColor(.white)
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.black)
     }
 }
 

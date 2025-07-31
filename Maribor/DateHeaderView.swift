@@ -77,7 +77,7 @@ struct DateHeaderView: View {
             .padding(.horizontal)
             
             // Date header with chevrons
-            HStack {
+            HStack(spacing: 40) {
                 Button(action: {
                     // Haptic feedback for going backward
                     let impactFeedback = UIImpactFeedbackGenerator(style: .light)
@@ -91,8 +91,6 @@ struct DateHeaderView: View {
                         .font(.title2)
                         .foregroundColor(forestGreen)
                 }
-                
-                Spacer()
                 
                 VStack(spacing: 4) {
                     Text(dateFormatter.string(from: taskManager.selectedDate))
@@ -115,8 +113,6 @@ struct DateHeaderView: View {
                         ))
                 }
                 
-                Spacer()
-                
                 Button(action: {
                     // Haptic feedback for going forward
                     let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
@@ -134,7 +130,6 @@ struct DateHeaderView: View {
             .padding(.horizontal)
         }
         .padding(.vertical, 8)
-        .background(Color(.systemBackground))
         .onAppear {
             // Ensure safe initialization
             guard !weekDates.isEmpty else { return }

@@ -14,8 +14,37 @@ struct ContentView: View {
     @State private var showingRolloverAlert = false
     
     var body: some View {
-        NavigationView {
+        ZStack {
+            // Background image
+            if let image = UIImage(named: "forest_background") {
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+                    .clipped()
+                    .ignoresSafeArea()
+            }
+            
+            // Dark overlay to make UI elements more visible
+            Color.black
+                .opacity(0.6)
+                .ignoresSafeArea()
+            
+            // Main content
             VStack(spacing: 0) {
+                // Top navigation bar
+                HStack {
+                    Spacer()
+                    Text("Maribor")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                    Spacer()
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 12)
+                .background(Color.black.opacity(0.4))
+                
                 DateHeaderView(taskManager: taskManager)
                 
                 // Outstanding tasks indicator
@@ -39,7 +68,6 @@ struct ContentView: View {
                     }
                     .padding(.horizontal)
                     .padding(.vertical, 8)
-                    .background(Color.orange.opacity(0.1))
                 }
                 
                 if taskManager.currentDateTasks.isEmpty {
@@ -112,30 +140,29 @@ struct ContentView: View {
                                 .clipShape(Circle())
                                 .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
                         }
-                        .padding(.trailing, 20)
+                        .padding(.trailing, 32)
                         .padding(.bottom, 20)
                     }
                 }
             }
-            .navigationBarHidden(true)
-            .sheet(isPresented: $showingAddTask) {
-                AddEditTaskView(taskManager: taskManager)
-                    .presentationDetents([.fraction(0.5)])
-                    .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showingAddTask) {
+            AddEditTaskView(taskManager: taskManager)
+                .presentationDetents([.fraction(0.5)])
+                .presentationDragIndicator(.visible)
+        }
+        .sheet(item: $taskToEdit) { task in
+            AddEditTaskView(taskManager: taskManager, taskToEdit: task)
+                .presentationDetents([.fraction(0.5)])
+                .presentationDragIndicator(.visible)
+        }
+        .alert("Move Outstanding Tasks", isPresented: $showingRolloverAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Move to Today") {
+                taskManager.manuallyRolloverTasks()
             }
-            .sheet(item: $taskToEdit) { task in
-                AddEditTaskView(taskManager: taskManager, taskToEdit: task)
-                    .presentationDetents([.fraction(0.5)])
-                    .presentationDragIndicator(.visible)
-            }
-            .alert("Move Outstanding Tasks", isPresented: $showingRolloverAlert) {
-                Button("Cancel", role: .cancel) { }
-                Button("Move to Today") {
-                    taskManager.manuallyRolloverTasks()
-                }
-            } message: {
-                Text("Move \(taskManager.getOutstandingTasksCount()) outstanding task\(taskManager.getOutstandingTasksCount() == 1 ? "" : "s") from previous days to today?")
-            }
+        } message: {
+            Text("Move \(taskManager.getOutstandingTasksCount()) outstanding task\(taskManager.getOutstandingTasksCount() == 1 ? "" : "s") from previous days to today?")
         }
         .onAppear {
             // Ensure smooth initial rendering
