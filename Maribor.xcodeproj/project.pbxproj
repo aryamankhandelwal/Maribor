@@ -6,7 +6,20 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		FB8739D22E3B425A00B9F831 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB8739D12E3B425A00B9F831 /* WidgetKit.framework */; };
+		FB8739D42E3B425A00B9F831 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB8739D32E3B425A00B9F831 /* SwiftUI.framework */; };
+		FB8739E52E3B425C00B9F831 /* MariborWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = FB8739CF2E3B425A00B9F831 /* MariborWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
+		FB8739E32E3B425C00B9F831 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FBD1203F2E3A760500FD8602 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FB8739CE2E3B425A00B9F831;
+			remoteInfo = MariborWidgetExtension;
+		};
 		FBD120582E3A760800FD8602 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FBD1203F2E3A760500FD8602 /* Project object */;
@@ -23,13 +36,48 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		FB8739EA2E3B425C00B9F831 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				FB8739E52E3B425C00B9F831 /* MariborWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		FB8739CF2E3B425A00B9F831 /* MariborWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MariborWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		FB8739D12E3B425A00B9F831 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		FB8739D32E3B425A00B9F831 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		FBD120472E3A760500FD8602 /* Maribor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Maribor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FBD120572E3A760800FD8602 /* MariborTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MariborTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FBD120612E3A760800FD8602 /* MariborUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MariborUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		FB8739E62E3B425C00B9F831 /* Exceptions for "MariborWidget" folder in "MariborWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = FB8739CE2E3B425A00B9F831 /* MariborWidgetExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		FB8739D52E3B425A00B9F831 /* MariborWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				FB8739E62E3B425C00B9F831 /* Exceptions for "MariborWidget" folder in "MariborWidgetExtension" target */,
+			);
+			path = MariborWidget;
+			sourceTree = "<group>";
+		};
 		FBD120492E3A760500FD8602 /* Maribor */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Maribor;
@@ -48,6 +96,15 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		FB8739CC2E3B425A00B9F831 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FB8739D42E3B425A00B9F831 /* SwiftUI.framework in Frameworks */,
+				FB8739D22E3B425A00B9F831 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FBD120442E3A760500FD8602 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -72,12 +129,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		FB8739D02E3B425A00B9F831 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FB8739D12E3B425A00B9F831 /* WidgetKit.framework */,
+				FB8739D32E3B425A00B9F831 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		FBD1203E2E3A760500FD8602 = {
 			isa = PBXGroup;
 			children = (
 				FBD120492E3A760500FD8602 /* Maribor */,
 				FBD1205A2E3A760800FD8602 /* MariborTests */,
 				FBD120642E3A760800FD8602 /* MariborUITests */,
+				FB8739D52E3B425A00B9F831 /* MariborWidget */,
+				FB8739D02E3B425A00B9F831 /* Frameworks */,
 				FBD120482E3A760500FD8602 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -88,6 +156,7 @@
 				FBD120472E3A760500FD8602 /* Maribor.app */,
 				FBD120572E3A760800FD8602 /* MariborTests.xctest */,
 				FBD120612E3A760800FD8602 /* MariborUITests.xctest */,
+				FB8739CF2E3B425A00B9F831 /* MariborWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,6 +164,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		FB8739CE2E3B425A00B9F831 /* MariborWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FB8739E72E3B425C00B9F831 /* Build configuration list for PBXNativeTarget "MariborWidgetExtension" */;
+			buildPhases = (
+				FB8739CB2E3B425A00B9F831 /* Sources */,
+				FB8739CC2E3B425A00B9F831 /* Frameworks */,
+				FB8739CD2E3B425A00B9F831 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				FB8739D52E3B425A00B9F831 /* MariborWidget */,
+			);
+			name = MariborWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = MariborWidgetExtension;
+			productReference = FB8739CF2E3B425A00B9F831 /* MariborWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		FBD120462E3A760500FD8602 /* Maribor */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = FBD1206B2E3A760800FD8602 /* Build configuration list for PBXNativeTarget "Maribor" */;
@@ -102,10 +193,12 @@
 				FBD120432E3A760500FD8602 /* Sources */,
 				FBD120442E3A760500FD8602 /* Frameworks */,
 				FBD120452E3A760500FD8602 /* Resources */,
+				FB8739EA2E3B425C00B9F831 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				FB8739E42E3B425C00B9F831 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				FBD120492E3A760500FD8602 /* Maribor */,
@@ -173,6 +266,9 @@
 				LastSwiftUpdateCheck = 1620;
 				LastUpgradeCheck = 1620;
 				TargetAttributes = {
+					FB8739CE2E3B425A00B9F831 = {
+						CreatedOnToolsVersion = 16.2;
+					};
 					FBD120462E3A760500FD8602 = {
 						CreatedOnToolsVersion = 16.2;
 					};
@@ -203,11 +299,19 @@
 				FBD120462E3A760500FD8602 /* Maribor */,
 				FBD120562E3A760800FD8602 /* MariborTests */,
 				FBD120602E3A760800FD8602 /* MariborUITests */,
+				FB8739CE2E3B425A00B9F831 /* MariborWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		FB8739CD2E3B425A00B9F831 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FBD120452E3A760500FD8602 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -232,6 +336,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		FB8739CB2E3B425A00B9F831 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FBD120432E3A760500FD8602 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -256,6 +367,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		FB8739E42E3B425C00B9F831 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FB8739CE2E3B425A00B9F831 /* MariborWidgetExtension */;
+			targetProxy = FB8739E32E3B425C00B9F831 /* PBXContainerItemProxy */;
+		};
 		FBD120592E3A760800FD8602 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = FBD120462E3A760500FD8602 /* Maribor */;
@@ -269,6 +385,60 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		FB8739E82E3B425C00B9F831 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = M2DRRF88BA;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MariborWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MariborWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.vercel.khandelwal.Maribor.MariborWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FB8739E92E3B425C00B9F831 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = M2DRRF88BA;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MariborWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MariborWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.vercel.khandelwal.Maribor.MariborWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		FBD120692E3A760800FD8602 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -521,6 +691,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		FB8739E72E3B425C00B9F831 /* Build configuration list for PBXNativeTarget "MariborWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FB8739E82E3B425C00B9F831 /* Debug */,
+				FB8739E92E3B425C00B9F831 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		FBD120422E3A760500FD8602 /* Build configuration list for PBXProject "Maribor" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
