@@ -8,36 +8,45 @@
 import WidgetKit
 import SwiftUI
 
-// Mock task data for the widget
-struct MockTaskData {
-    static let sampleTasks: [Task] = [
-        Task(name: "Borrow Sarah's travel guide", description: "Get the travel guide from Sarah", date: Date()),
-        Task(name: "Finish expense report", description: "Complete the quarterly expense report", date: Date()),
-        Task(name: "Review quarterly data with Olivia", description: "Go through the quarterly data", date: Date()),
-        Task(name: "Prepare presentation slides", description: "Create slides for the meeting", date: Date()),
-        Task(name: "Update project documentation", description: "Update the project docs", date: Date()),
-        Task(name: "Schedule team meeting", description: "Set up the weekly team sync", date: Date()),
-        Task(name: "Review code changes", description: "Review the latest PR", date: Date()),
-        Task(name: "Order office supplies", description: "Order new supplies", date: Date()),
-        Task(name: "Call client about project", description: "Follow up with the client", date: Date())
-    ]
+// Simple data accessor for widget to read tasks from UserDefaults
+struct WidgetDataAccessor {
+    static func getIncompleteTasksForToday() -> [Task] {
+        guard let data = UserDefaults.standard.data(forKey: "tasks"),
+              let tasks = try? JSONDecoder().decode([Task].self, from: data) else {
+            return []
+        }
+        
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        
+        return tasks.filter { task in
+            calendar.isDate(task.date, inSameDayAs: today) && !task.isCompleted
+        }.sorted { task1, task2 in
+            task1.createdAt < task2.createdAt
+        }
+    }
 }
 
 struct Provider: TimelineProvider {
     typealias Entry = TaskEntry
     
     func placeholder(in context: Context) -> TaskEntry {
-        TaskEntry(date: Date(), tasks: MockTaskData.sampleTasks)
+        TaskEntry(date: Date(), tasks: [])
     }
 
     func getSnapshot(in context: Context, completion: @escaping (TaskEntry) -> ()) {
-        let entry = TaskEntry(date: Date(), tasks: MockTaskData.sampleTasks)
+        let incompleteTasks = WidgetDataAccessor.getIncompleteTasksForToday()
+        let entry = TaskEntry(date: Date(), tasks: incompleteTasks)
         completion(entry)
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<TaskEntry>) -> ()) {
-        let entry = TaskEntry(date: Date(), tasks: MockTaskData.sampleTasks)
-        let timeline = Timeline(entries: [entry], policy: .never)
+        let incompleteTasks = WidgetDataAccessor.getIncompleteTasksForToday()
+        let entry = TaskEntry(date: Date(), tasks: incompleteTasks)
+        
+        // Update every 15 minutes to keep widget fresh
+        let nextUpdate = Calendar.current.date(byAdding: .minute, value: 15, to: Date()) ?? Date()
+        let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
         completion(timeline)
     }
 }
@@ -63,7 +72,7 @@ struct MariborWidgetEntryView : View {
                     
                     Spacer()
                     
-                    // Task count badge
+                    // Task count badge - show total incomplete tasks
                     ZStack {
                         Circle()
                             .fill(Color.gray.opacity(0.3))
@@ -75,7 +84,7 @@ struct MariborWidgetEntryView : View {
                     }
                 }
                 
-                // Show top 3 tasks with bullet points
+                // Show top 3 incomplete tasks with bullet points
                 VStack(alignment: .leading, spacing: 10) {
                     ForEach(Array(entry.tasks.prefix(3)), id: \.id) { task in
                         HStack(alignment: .top, spacing: 8) {
@@ -99,7 +108,7 @@ struct MariborWidgetEntryView : View {
                 
                 Spacer()
                 
-                // Show remaining count if more than 3 tasks
+                // Show remaining count if more than 3 incomplete tasks
                 if entry.tasks.count > 3 {
                     let remainingCount = entry.tasks.count - 3
                     Text("+ \(remainingCount) others")
@@ -149,5 +158,5 @@ struct MariborWidget: Widget {
 #Preview(as: .systemSmall) {
     MariborWidget()
 } timeline: {
-    TaskEntry(date: .now, tasks: MockTaskData.sampleTasks)
+    TaskEntry(date: .now, tasks: [])
 }

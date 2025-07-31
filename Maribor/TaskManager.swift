@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 import UserNotifications
+import WidgetKit
 
 class TaskManager: ObservableObject {
     @Published var tasks: [Task] = []
@@ -202,12 +203,14 @@ class TaskManager: ObservableObject {
         let task = Task(name: name, description: description, date: date)
         tasks.append(task)
         saveTasks()
+        refreshWidget()
     }
     
     func toggleTaskCompletion(_ task: Task) {
         if let index = tasks.firstIndex(where: { $0.id == task.id }) {
             tasks[index].isCompleted.toggle()
             saveTasks()
+            refreshWidget()
         }
     }
     
@@ -217,19 +220,28 @@ class TaskManager: ObservableObject {
             tasks[index].description = description
             tasks[index].date = date
             saveTasks()
+            refreshWidget()
         }
     }
     
     func deleteTask(_ task: Task) {
         tasks.removeAll { $0.id == task.id }
         saveTasks()
+        refreshWidget()
     }
     
     func moveTaskToNextDay(_ task: Task) {
         if let index = tasks.firstIndex(where: { $0.id == task.id }) {
             tasks[index].date = Calendar.current.date(byAdding: .day, value: 1, to: task.date) ?? task.date
             saveTasks()
+            refreshWidget()
         }
+    }
+    
+    // MARK: - Widget Refresh
+    
+    private func refreshWidget() {
+        WidgetCenter.shared.reloadAllTimelines()
     }
     
     // MARK: - Date Navigation
@@ -257,6 +269,17 @@ class TaskManager: ObservableObject {
                 return task1.createdAt < task2.createdAt
             }
             return !task1.isCompleted && task2.isCompleted
+        }
+    }
+    
+    func getIncompleteTasksForToday() -> [Task] {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        
+        return tasks.filter { task in
+            calendar.isDate(task.date, inSameDayAs: today) && !task.isCompleted
+        }.sorted { task1, task2 in
+            task1.createdAt < task2.createdAt
         }
     }
     
