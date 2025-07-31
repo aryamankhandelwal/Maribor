@@ -24,10 +24,16 @@ struct DateHeaderView: View {
     private var weekDates: [Date] {
         let calendar = Calendar.current
         let today = taskManager.selectedDate
+        
+        // Get the start of the week (Monday)
         let startOfWeek = calendar.dateInterval(of: .weekOfYear, for: today)?.start ?? today
         
+        // Adjust to Monday if the week doesn't start on Monday
+        let mondayOffset = calendar.component(.weekday, from: startOfWeek) - 2 // Monday is 2 in Calendar
+        let mondayOfWeek = calendar.date(byAdding: .day, value: -mondayOffset, to: startOfWeek) ?? startOfWeek
+        
         return (0..<7).compactMap { dayOffset in
-            calendar.date(byAdding: .day, value: dayOffset, to: startOfWeek)
+            calendar.date(byAdding: .day, value: dayOffset, to: mondayOfWeek)
         }
     }
     
@@ -76,8 +82,9 @@ struct DateHeaderView: View {
             }
             .padding(.horizontal)
             
-            // Date header with chevrons
-            HStack(spacing: 40) {
+            // Date header with fixed chevron positions
+            HStack {
+                // Fixed left chevron position
                 Button(action: {
                     // Haptic feedback for going backward
                     let impactFeedback = UIImpactFeedbackGenerator(style: .light)
@@ -91,28 +98,31 @@ struct DateHeaderView: View {
                         .font(.title2)
                         .foregroundColor(forestGreen)
                 }
+                .frame(width: 70, alignment: .leading)
                 
-                VStack(spacing: 4) {
-                    Text(dateFormatter.string(from: taskManager.selectedDate))
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                        .foregroundColor(Calendar.current.isDateInToday(taskManager.selectedDate) ? forestGreen : .white)
-                        .onTapGesture {
-                            // Haptic feedback for going to today
-                            let notificationFeedback = UINotificationFeedbackGenerator()
-                            notificationFeedback.notificationOccurred(.success)
-                            
-                            withAnimation(.easeInOut(duration: 0.25)) {
-                                taskManager.goToToday()
-                            }
+                // Center date with fixed width
+                Text(dateFormatter.string(from: taskManager.selectedDate))
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .foregroundColor(Calendar.current.isDateInToday(taskManager.selectedDate) ? forestGreen : .white)
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity)
+                    .onTapGesture {
+                        // Haptic feedback for going to today
+                        let notificationFeedback = UINotificationFeedbackGenerator()
+                        notificationFeedback.notificationOccurred(.success)
+                        
+                        withAnimation(.easeInOut(duration: 0.25)) {
+                            taskManager.goToToday()
                         }
-                        .id("date-\(taskManager.selectedDate.timeIntervalSince1970)")
-                        .transition(.asymmetric(
-                            insertion: .scale(scale: 1.1).combined(with: .opacity),
-                            removal: .scale(scale: 0.9).combined(with: .opacity)
-                        ))
-                }
+                    }
+                    .id("date-\(taskManager.selectedDate.timeIntervalSince1970)")
+                    .transition(.asymmetric(
+                        insertion: .scale(scale: 1.1).combined(with: .opacity),
+                        removal: .scale(scale: 0.9).combined(with: .opacity)
+                    ))
                 
+                // Fixed right chevron position
                 Button(action: {
                     // Haptic feedback for going forward
                     let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
@@ -126,10 +136,12 @@ struct DateHeaderView: View {
                         .font(.title2)
                         .foregroundColor(forestGreen)
                 }
+                .frame(width: 70, alignment: .trailing)
             }
             .padding(.horizontal)
         }
-        .padding(.vertical, 8)
+        .padding(.top, 20) // Add more padding between top bar and numbers
+        .padding(.bottom, 8)
         .onAppear {
             // Ensure safe initialization
             guard !weekDates.isEmpty else { return }
